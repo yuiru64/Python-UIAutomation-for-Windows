@@ -42,6 +42,13 @@ IsNT6orHigher = os.sys.getwindowsversion().major >= 6
 ProcessTime = time.perf_counter  # this returns nearly 0 when first call it if python version <= 3.6
 ProcessTime()  # need to call it once if python version <= 3.6
 
+def Debug():
+    global DEBUG_SEARCH_TIME, DEBUG_EXIST_DISAPPEAR
+    DEBUG_SEARCH_TIME = True
+    DEBUG_EXIST_DISAPPEAR = True
+
+def UIAutomationClient():
+    return _AutomationClient.instance()
 
 class _AutomationClient:
     _instance = None
@@ -8531,6 +8538,62 @@ def RunByHotKey(keyFunctions: Dict[Tuple[int, int], Callable], stopHotKey: Tuple
             thread.join(2)
     os._exit(0)
 
+def SimpleFind(control: Control, findMatcher: str) -> Control:
+    findMatchers = []
+    matchers = findMatcher.split("/")
+    for matcher in matchers:
+        if matcher.startswith("@"):
+            findMatchers.append(matcher)
+            continue
+        attr_matchers = matcher.split(",")
+        tmp = {}
+        for attr_matcher in attr_matchers:
+            tmp2 = attr_matcher.split(":")
+            tmp[tmp2[0]] = tmp2[1]
+        findMatchers.append(tmp)
+
+    handle = control
+    for matcher in findMatchers:
+        if isinstance(matcher, str):
+            if matcher.startswith("@child:"):
+                handle = handle.GetChildren()[int(matcher[7:])]
+            elif matcher == "@first":
+                handle = handle.GetFirstChildControl()
+            elif matcher == "@last":
+                handle = handle.GetLastChildControl()
+            elif matcher == "@next":
+                handle = handle.GetNextSiblingControl()
+            elif matcher == "@prev":
+                handle = handle.GetPreviousSiblingControl()
+            elif matcher == "@parent":
+                handle = handle.GetParentControl()
+            continue
+        if "foundIndex" in matcher:
+            matcher["foundIndex"] = int(matcher["foundIndex"])
+        if "Depth" in matcher:
+            matcher["Depth"] = int(matcher["Depth"])
+        if "searchDepth" not in matcher:
+            matcher["searchDepth"] = 1
+        else:
+            matcher["searchDepth"] = int(matcher["searchDepth"])
+        handle = handle.Control(**matcher)
+    return handle
+
+def PesudoDoubleClick(c: Control, interval: float=.1, x=None, y=None, ratioX=.5, ratioY=.5, simulateMove=True, waitTime: float=OPERATION_WAIT_TIME):
+    c.Click(x=x, y=y, ratioX=ratioX, ratioY=ratioY, simulateMove=simulateMove)
+    time.sleep(interval)
+    c.Click(x=x, y=y, ratioX=ratioX, ratioY=ratioY, simulateMove=simulateMove, waitTime=waitTime)
+
+def WaitForLoad(c: Control, waitTime: float=.1, hitCount: int=2):
+    last_num = len(c.GetChildren())
+    time.sleep(waitTime)
+    count = 0
+    while count < hitCount:
+        num = len(c.GetChildren())
+        time.sleep(waitTime)
+        if num == last_num:
+            count += 1
+        last_num = num
 
 if __name__ == '__main__':
 
