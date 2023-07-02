@@ -45,20 +45,20 @@ After installing "uiautomation" using "pip install uiautomation", a file called 
 ### Searching with Command Line
 
 Run '**automation.py -h**' to view the command help. When writing automation code, refer to the output of this command to write corresponding code.
-![help](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\uiautomation-h-16858087959281.png)
+![help](images/uiautomation-h.png)
 
 Understand the meanings of the parameters in the above image and run the following commands to see the program's execution results.
 **automation.py -t 0**,   Print all controls of the currently active window.
 **automation.py -r -d 1 -t 0**, Print the desktop (root control of the tree) and its first-level child windows (TopLevel windows).
 **automation.py -xfind Depth:1,RegexName:.\*Calculator.\*/@first/@last/@parent/@next/@prev/@child:3**, Search for controls that match the regular expression `.*Calculator.*` in nodes with a depth of 1. Take the first child node, then take the last child node of the new node, then take the parent node of the new node, then take the next sibling of the new node, then take the previous sibling of the new node, and finally take the third child node of the new node.
 
-![top level windows](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\automation_toplevels.png)
+![top level windows](images/automation_toplevels.png)
 
 automation.py displays some properties of each control in the control tree and the patterns supported by the control.
 
 According to Microsoft UIAutomation API, a specific type of control must support or choose to support a certain pattern, as shown in the image below:
 
-![patterns](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\control_pattern.png)
+![patterns](images/control_pattern.png)
 
 Refer to [Control Pattern Mapping for UI Automation Clients](https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-controlpatternmapping) to view the complete table of control-pattern support.
 
@@ -263,21 +263,21 @@ For example, in the Chrome browser, by default, you can only see the top-level `
 ## Some Screenshots
 
 Batch rename PDF bookmarks
-![bookmark](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\rename_pdf_bookmark.gif)
+![bookmark](images/rename_pdf_bookmark.gif)
 
 Get text from Microsoft Word
-![Word](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\word.png)
+![Word](images/word.png)
 
 Wireshark 3.0 (Qt 5.12)
-![Wireshark](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\wireshark3.0.gif)
+![Wireshark](images/wireshark3.0.gif)
 
 GitHub Desktop (Electron App)
-![GitHubDesktop](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\github_desktop.png)
+![GitHubDesktop](images/github_desktop.png)
 
 Display QQ
-![QQ](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\automation_qq.png)
+![QQ](images/automation_qq.png)
 
 Print a nicely formatted directory structure
-![PrettyPrint](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\pretty_print_dir.png)
+![PrettyPrint](images/pretty_print_dir.png)
 
 .
