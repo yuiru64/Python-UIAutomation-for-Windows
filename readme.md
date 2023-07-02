@@ -1,246 +1,239 @@
-# The uiautomation module
+# uiautomation
 
-:cn:[中文版介绍](https://github.com/yinkaisheng/Python-UIAutomation-for-Windows/blob/master/readme_cn.md)
+[[中文](readme_cn.md)] [[Englinsh](readme.md)]
 
-Do not use 3.7.6 and 3.8.1, comtypes doesn't work in these two versions. Install an earlier version or the latest version.
-https://github.com/enthought/comtypes/issues/202
+uiautomation is a module developed by yinkaisheng for personal use in his spare time. As of 2023, the original author has not updated it for almost two years. This is a fork version of uiautomation that adds some additional features to the original module.
 
+uiautomation encapsulates the Microsoft [UIAutomation API](https://docs.microsoft.com/en-us/windows/win32/api/uiautomationclient/nn-uiautomationclient-iuiautomation) and supports automation for Win32, MFC, WPF, Modern UI (Metro UI), Qt, IE, Firefox (version <= 56 or >= 60, Firefox 57 is the first Rust development version, and personal tests have shown that the first few Rust development versions do not support it), Chrome, and applications based on Electron (Chrome browser and Electron applications require the "--force-renderer-accessibility" launch parameter to support UIAutomation).
 
-This module is for [UIAutomation](https://docs.microsoft.com/en-us/windows/win32/winauto/ui-automation-specification) on Windows(Windows XP with SP3, Windows Vista, Windows 7 and Windows 8/8.1/10).
-It supports UIAutomation for the applications which implmented UIAutomation Provider, such as MFC, Windows Form, WPF, Modern UI(Metro UI), Qt(Partly), Firefox(**version<=56 or >=60**), Chrome and Electron based apps(require **--force-renderer-accessibility** command line parameter).
+In addition, uiautomation also provides screenshot functionality, which is sourced from [UIAutomationClient](https://github.com/yinkaisheng/UIAutomationClient).
 
-I developed it in my spare time and for my personal use.
+## Features
 
-uiautomation is shared under the Apache Licence 2.0.  
-This means that the code can be freely copied and distributed, and costs nothing to use.
+- [x] Command-line control search
+- [x] Multiple conditions for control matching and traversal
+- [x] Screen capture
+- [x] Hotkey binding
+- [x] Event listening
+- [x] Support for running in different threads
+- [ ] ...
 
-uiautomation1.x supports py2, py3 and doesn't depend on any third package.
+## Installation Requirements
 
-uiautomation2.0+ only supports py3 and depends on comtypes and typing(Python3.5+ built-in).  
-uiautomation2.0+ is not backward compatible with early versions. See [API changes](https://github.com/yinkaisheng/Python-UIAutomation-for-Windows/blob/master/API%20changes.txt).
+### Version Compatibility
 
-You can install uiautomation by "pip install uiautomation". After installation, a automation.py that calls uiautomation will be in 'C:\PythonXX\Scripts\'.
-You use this script to traverse UI controls.
+The latest version of uiautomation2.0 only supports Python 3, with dependencies on the "comtypes" and "typing" packages. However, versions 3.7.6 and 3.8.1 should not be used, as comtypes does not work properly in these versions ([issue](https://github.com/enthought/comtypes/issues/202)). Use the following command to install the dependencies:
 
-Run 'C:\PythonXX\Scripts\automation.py -h' for help.  
-Run demos\automation_calculator.py to see a simple demo.
+```
+pip install comtypes
+```
 
-On Windows 8/8.1, to automate a Metro App, the app must be in foreground. If a Metro App was switched to background, uiautomation can't fetch its controls' information.
+If you are using code from versions prior to uiautomation2.0, please refer to the [API changes](https://github.com/yinkaisheng/Python-UIAutomation-for-Windows/blob/master/API%20changes.txt) to modify your code. uiautomation supports running on Windows desktop systems starting from Windows XP SP3 or later.
 
-By the way, You should run python as **administrator**. Otherwise uiautomation may fail to enumerate controls or get controls' information on Windows 7 or higher.
+### Requirements for Older Windows Systems
 
-[Requirements:](https://docs.microsoft.com/en-us/windows/win32/api/uiautomationclient/nn-uiautomationclient-iuiautomation)
+If you are using Windows XP, make sure that the system directory contains the file "UIAutomationCore.dll". If it is not present, you need to install the patch **[KB971513](https://github.com/yinkaisheng/WindowsUpdateKB971513ForIUIAutomation)** to support UIAutomation.
 
-Microsoft UIAutomation Minimum supported client:
-Windows 7, Windows Vista with SP2 and Platform Update for Windows Vista, Windows XP with SP3 and Platform Update for Windows Vista [desktop apps only]
+### Administrator Privileges Requirement
 
-Microsoft UIAutomation Minimum supported server:
-Windows Server 2008 R2, Windows Server 2008 with SP2 and Platform Update for Windows Server 2008, Windows Server 2003 with SP2 and Platform Update for Windows Server 2008 [desktop apps only]
+When using uiautomation on Windows 7 or later versions of Windows, Python needs to be run with administrator privileges; otherwise, many functions of uiautomation may fail or throw exceptions. Alternatively, you can run cmd.exe with administrator privileges and then call Python in the cmd window. The title of the cmd window should indicate **Administrator**.
 
-C++ dll source code: [UIAutomationClient](https://github.com/yinkaisheng/UIAutomationClient)
+After installing "uiautomation" using "pip install uiautomation", a file called "automation.py" will be available in the Scripts directory of Python (e.g., C:\Python37\Scripts), or you can use the "automation.py" file from the root directory of the source code. "automation.py" is a script used to enumerate the control tree structure.
 
----
+## Get started Guide
 
-How to use uiautomation?
-run '**automation.py -h**'
-![help](images/uiautomation-h.png)
+### Searching with Command Line
 
-Understand the arguments of automation.py, and try the following examples:  
-**automation.py -t 0 -n**, print current active window's controls, show fullname  
-**automation.py -r -d 1 -t 0**, print desktop(the root of control tree) and it's children(top level windows)  
+Run '**automation.py -h**' to view the command help. When writing automation code, refer to the output of this command to write corresponding code.
+![help](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\uiautomation-h-16858087959281.png)
 
-![top level windows](images/automation_toplevels.png)
+Understand the meanings of the parameters in the above image and run the following commands to see the program's execution results.
+**automation.py -t 0**,   Print all controls of the currently active window.
+**automation.py -r -d 1 -t 0**, Print the desktop (root control of the tree) and its first-level child windows (TopLevel windows).
+**automation.py -xfind Depth:1,RegexName:.\*Calculator.\*/@first/@last/@parent/@next/@prev/@child:3**, Search for controls that match the regular expression `.*Calculator.*` in nodes with a depth of 1. Take the first child node, then take the last child node of the new node, then take the parent node of the new node, then take the next sibling of the new node, then take the previous sibling of the new node, and finally take the third child node of the new node.
 
-automation.py prints the properties of controls and the patterns they support. 
-You use controls and patterns to get controls' information and operate them.
+![top level windows](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\automation_toplevels.png)
 
-A control should support some patterns or conditionally supports some patterns according to its control type.
+automation.py displays some properties of each control in the control tree and the patterns supported by the control.
 
-![patterns](images/control_pattern.png)
+According to Microsoft UIAutomation API, a specific type of control must support or choose to support a certain pattern, as shown in the image below:
 
-Refer [Control Pattern Mapping for UI Automation Clients](https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-controlpatternmapping) for the full control pattern table.
+![patterns](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\control_pattern.png)
 
+Refer to [Control Pattern Mapping for UI Automation Clients](https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-controlpatternmapping) to view the complete table of control-pattern support.
 
-uiautomation searches controls from the control tree based on the controls' properties you supply.
+uiautomation encapsulates various controls and patterns from Windows UIAutomation.
 
-Suppose the control tree is  
+Control types include ButtonControl, TextControl, TreeControl, and more.
 
-root(Name='Desktop', Depth=0)  
-　　window1(Depth=1)  
-　　　　control1-001(Depth=2)  
-　　　　control1-...(Depth=2)  
-　　　　...  
-　　　　control1-100(Depth=2)  
-　　window2(Name='window2', Depth=1)  
-　　　　control2-1(Depth=2)  
-　　　　　　control2-1-001(Depth=3)  
-　　　　　　control2-1-...(Depth=3)  
-　　　　　　...  
-　　　　　　control2-1-100(Depth=3)  
-　　　　control2-2(Depth=2)  
-　　　　control2-3(Depth=2)  
-　　　　control2-4(Name='2-4', Depth=2)  
-　　　　　　editcontrol(Name='myedit1', Depth=3)  
-　　　　　　**editcontrol(Name='myedit2', Depth=3)**  
+Pattern types include ExpandCollapsePattern, InvokePattern, and more.
 
-If you want to find the EditControl whose name is 'myedit2' and type 'hi',  
-you can write the following code:
+In actual use, Control or Pattern objects are used to retrieve control information or operate on controls.
+
+uiautomation searches for controls in the control tree from top to bottom based on the control properties you provide.
+
+Assuming the control tree is as follows:
+
+```
+root(Name='Desktop', Depth=0)
+    window1(Depth=1)
+        control1-001(Depth=2)
+        control1-...(Depth=2)
+        ...
+        control1-100(Depth=2)
+    window2(Name='window2', Depth=1)
+        control2-1(Depth=2)
+            control2-1-001(Depth=3)
+            control2-1-...(Depth=3)
+            ...
+            control2-1-100(Depth=3)
+        control2-2(Depth=2)
+        control2-3(Depth=2)
+        control2-4(Name='2-4', Depth=2)
+            editcontrol(Name='myedit1', Depth=3)
+            editcontrol(Name='myedit2', Depth=3
+```
+
+### Searching with Code
+
+If you want to find an EditControl named "myedit2" and type in it, you can write the following code:
 
 ```python
 uiautomation.EditControl(searchDepth=3, Name='myedit2').SendKeys('hi')
 ```
 
-But this code run slowly because there are more than 200 controls before myedit2 in the control tree.  
-uiautomation has to traverse more than 200 controls before finding myedit2 if search from root in 3 search depth.  
-The better is:
+However, this code is not very efficient because there are many controls in the control tree, and the EditControl you are looking for is at the end of the tree. It takes over 200 iterations to find this EditControl by searching the entire control tree from the root.
+
+To speed up the search, you can use layered searching and specify the search depth. This way, you can find the control in just a few iterations. Here's an example:
 
 ```python
-window2 = uiautomation.WindowControl(searchDepth=1, Name='window2') # search 2 times
-sub = window2.Control(searchDepth=1, Name='2-4')    # search 4 times
-edit = sub.EditControl(searchDepth=1, Name='myedit2')   # search 2 times
+window2 = uiautomation.WindowControl(searchDepth=1, Name='window2')  # search 2 times
+sub = window2.Control(searchDepth=1, Name='2-4')  # search 4 times
+edit = sub.EditControl(searchDepth=1, Name='myedit2')  # search 2 times
 edit.SendKeys('hi')
 ```
 
-This code run faster than the former.  
-You can also combine the four lines code into one line.  
+In this code, we first search for the window named "window2" in the first layer of the desktop. It takes 2 iterations to find it. Then, we search for the control named "2-4" in the first layer of "window2". It takes 4 iterations to find it. Finally, we search for the EditControl named "myedit2" in the first layer of "2-4". It takes 2 iterations to find it. In total, it takes 8 iterations to find the control.
+
+You can also combine the above four lines of code into one line:
 
 ```python
 uiautomation.WindowControl(searchDepth=1, Name='window2').Control(searchDepth=1, Name='2-4').EditControl(searchDepth=1, Name='myedit2').SendKeys('hi')
 ```
 
-Now let's take notepad.exe for an example.  
-Luanch notepad.exe and run automation.py -t 3, then swith to Notepad and wait for 5 seconds  
+Let's take a look at an example with the Notepad program. Run "notepad.exe" and then run "automation.py -t 3" to switch to Notepad and make it the currently active window. After 3 seconds, "automation.py" will print all the controls in Notepad and save them to the log file "@AutomationLog.txt".
 
-automation.py will print the controls of Notepad and save them to @AutomationLog.txt:  
+On my computer, the output looks like this:
 
-ControlType: PaneControl    ClassName: #32769    Name: 桌面    Depth: 0    **(Desktop window, the root control)**  
-　　ControlType: WindowControl    ClassName: Notepad    Depth: 1    **(Top level window)**  
-　　　　ControlType: EditControl    ClassName: Edit    Depth: 2  
-　　　　　　ControlType: ScrollBarControl    ClassName:     Depth: 3  
-　　　　　　　　ControlType: ButtonControl    ClassName:     Depth: 4  
-　　　　　　　　ControlType: ButtonControl    ClassName:     Depth: 4  
-　　　　　　ControlType: ThumbControl    ClassName:     Depth: 3  
-　　　　ControlType: TitleBarControl    ClassName:     Depth: 2  
-　　　　　　ControlType: MenuBarControl    ClassName:     Depth: 3  
-　　　　　　　　ControlType: MenuItemControl    ClassName:     Depth: 4  
-　　　　　　ControlType: ButtonControl    ClassName:     Name: 最小化    Depth: 3    **(Minimize Button)**  
-　　　　　　ControlType: ButtonControl    ClassName:     Name: 最大化    Depth: 3    **(Maximize Button)**  
-　　　　　　ControlType: ButtonControl    ClassName:     Name: 关闭    Depth: 3    **(Close Button)**  
-...  
+```
+ControlType: PaneControl    ClassName: #32769    Name: Desktop    Depth: 0    **(Desktop window, root control)**
+    ControlType: WindowControl    ClassName: Notepad    Depth: 1    **(Top-level window, Notepad window)**
+        ControlType: EditControl    ClassName: Edit    Depth: 2
+            ControlType: ScrollBarControl    ClassName:     Depth: 3
+                ControlType: ButtonControl    ClassName:     Depth: 4
+                ControlType: ButtonControl    ClassName:     Depth: 4
+            ControlType: ThumbControl    ClassName:     Depth: 3
+        ControlType: TitleBarControl    ClassName:     Depth: 2
+            ControlType: MenuBarControl    ClassName:     Depth: 3
+                ControlType: MenuItemControl    ClassName:     Depth: 4
+            ControlType: ButtonControl    ClassName:     Name: Minimize    Depth: 3
+            ControlType: ButtonControl    ClassName:     Name: Maximize    Depth: 3
+            ControlType: ButtonControl    ClassName:     Name: Close    Depth: 3
+```
 
-Run the following code
+Run the following code:
 
 ```python
 # -*- coding: utf-8 -*-
-# this script only works with Win32 notepad.exe
-# if you notepad.exe is the Windows Store version in Windows 11, you need to uninstall it.
 import subprocess
 import uiautomation as auto
 
-def test():
-    print(auto.GetRootControl())
-    subprocess.Popen('notepad.exe', shell=True)
-    # you should find the top level window first, then find children from the top level window
-    notepadWindow = auto.WindowControl(searchDepth=1, ClassName='Notepad')
-    if not notepadWindow.Exists(3, 1):
-        print('Can not find Notepad window')
-        exit(0)
-    print(notepadWindow)
-    notepadWindow.SetTopmost(True)
-    # find the first EditControl in notepadWindow
-    edit = notepadWindow.EditControl()
-    # usually you don't need to catch exceptions
-    # but if you meet a COMError exception, put it in a try block
-    try:
-        # use value pattern to get or set value
-        edit.GetValuePattern().SetValue('Hello')# or edit.GetPattern(auto.PatternId.ValuePattern)
-    except auto.comtypes.COMError as ex:
-        # maybe you don't run python as administrator 
-        # or the control doesn't have a implementation for the pattern method(I have no solution for this)
-        pass
-    edit.SendKeys('{Ctrl}{End}{Enter}World')
-    print('current text:', edit.GetValuePattern().Value)
-    # find the first TitleBarControl in notepadWindow, 
-    # then find the second ButtonControl in TitleBarControl, which is the Maximize button
-    notepadWindow.TitleBarControl().ButtonControl(foundIndex=2).Click()
-    # find the first button in notepadWindow whose Name is '关闭', the close button
-    # the relative depth from Close button to Notepad window is 2
-    notepadWindow.ButtonControl(searchDepth=2, Name='关闭').Click()
-    # then notepad will popup a window askes you to save or not, press hotkey alt+n not to save
-    auto.SendKeys('{Alt}n')
+print(auto.GetRootControl())
+subprocess.Popen('
 
-if __name__ == '__main__':
-    test()
+notepad.exe')
+# First, find the window control of the Notepad program from the first layer of the desktop's child controls.
+notepadWindow = auto.WindowControl(searchDepth=1, ClassName='Notepad')
+print(notepadWindow.Name)
+notepadWindow.SetTopmost(True)
+# Find the first EditControl among all descendants of the notepadWindow control. Since the EditControl is the first child control, you don't need to specify the depth.
+edit = notepadWindow.EditControl()
+# Get the ValuePattern supported by the EditControl and set the control's text to "Hello" using the pattern.
+edit.GetValuePattern().SetValue('Hello')  # or edit.GetPattern(auto.PatternId.ValuePattern)
+edit.SendKeys('{Ctrl}{End}{Enter}World')  # Type at the end of the text
+# First, find the TitleBarControl from the first layer of the notepadWindow control,
+# and then find the second ButtonControl (the maximize button) among the descendants of the TitleBarControl, and click the button.
+notepadWindow.TitleBarControl(Depth=1).ButtonControl(foundIndex=2).Click()
+# Find the button with the name '关闭' (close) among the first two layers of descendants of the notepadWindow control and click the button.
+notepadWindow.ButtonControl(searchDepth=2, Name='关闭').Click()
+# At this point, a prompt asking whether to save the Notepad document pops up. Press Alt+N to exit without saving.
+auto.SendKeys('{Alt}n')
 ```
 
-auto.GetRootControl() returns the root control(the Desktop window)  
-auto.WindowControl(searchDepth=1, ClassName='Notepad') creates a WindowControl, the parameters specify how to search the control  
-the following parameters can be used  
-searchFromControl = None,   
-searchDepth = 0xFFFFFFFF,   
-searchInterval = SEARCH_INTERVAL,   
-foundIndex = 1  
-Name  
-SubName  
-RegexName  
-ClassName  
-AutomationId  
-ControlType  
-Depth  
-Compare  
+The `auto.GetRootControl()` function returns the root node (desktop window) of the control tree. The `auto.WindowControl(searchDepth=1, ClassName='Notepad')` creates a `WindowControl` object, and the parameters in parentheses specify the conditions or control properties to search for this control in the control tree.
 
-See Control.\_\_init\_\_ for the comments of the parameters.  
-See scripts in folder **demos** for more examples.  
+The `__init__` function of the `Control` class has the following parameters that can be used:
 
-Control.Element returns the low level COM object [IUIAutomationElement](https://docs.microsoft.com/en-us/windows/win32/api/uiautomationclient/nn-uiautomationclient-iuiautomationelement),
-Almost all methods and properties of Control are implemented via IUIAutomationElement COM API and Win32 API.
-when calling a control's method or property that indirectly calls Control.Element and Control.Element is None, 
-uiautomation starts to search the control by the properties you supply.
-uiautomation will raise a LookupError exception if it can't find the control in uiautomation.TIME_OUT_SECOND(default 10 seconds).
-Control.Element will has a valid value if uiautomation finds the control successfully.
-You can use Control.Exists(maxSearchSeconds, searchIntervalSeconds) to check whether a control Exists, this function doesn't raise any exception.
-Call Control.Refind or Control.Exists to make Control.Element invalid again and uiautomation will starts a new search.  
+```
+searchFromControl = None  # Where to start the search from. If None, start from the root node (Desktop).
+searchDepth = 0xFFFFFFFF  # Search depth.
+searchInterval = SEARCH_INTERVAL  # Search interval.
+foundIndex = 1  # The index of the found control that satisfies the search conditions. Indices start from 1.
+Name  # Control name.
+SubName  # Partial control name.
+RegexName  # Match control names using regular expressions. Only one of Name, SubName, and RegexName can be used at a time.
+ClassName  # Control class name.
+AutomationId  # Control AutomationId.
+ControlType  # Control type.
+Depth  # The exact depth of the control relative to searchFromControl.
+Compare  # Custom comparison function function(control: Control, depth: int) -> bool.
+```
 
-For example:  
+The difference between `searchDepth` and `Depth` is as follows:
+- `searchDepth` searches for the first control that satisfies the search conditions within the specified depth range (including all descendants in layers 1 to `searchDepth`).
+- `Depth` searches for the first control that satisfies the search conditions only at the specified depth (excluding all descendants in layers 1 to `searchDepth-1`).
+
+The `Control.Element` returns the underlying COM object [IUIAutomationElement](https://docs.microsoft.com/en-us/windows/win32/api/uiautomationclient/nn-uiautomationclient-iuiautomationelement) of the IUIAutomation COM interface. Essentially, all the properties and methods of `Control` are implemented by calling the IUIAutomationElement COM API and Win32 API. When you use a property or method of a `Control`, it internally calls `Control.Element`, and if `Control.Element` is `None
+
+`, uiautomation starts searching for the control. If the control is not found within `uiautomation.TIME_OUT_SECOND` (default is 10 seconds), uiautomation raises a LookupError exception. Once a control is found, `Control.Element` will have a valid value. You can use `Control.Exists(maxSearchSeconds, searchIntervalSeconds)` to check if a control exists without throwing an exception. You can also use `Control.Refind` or `Control.Exists` to invalidate `Control.Element` and trigger a re-search.
+
+Here's an example:
+
 ```python
 #!python3
 # -*- coding:utf-8 -*-
-# this script only works with Win32 notepad.exe
-# if you notepad.exe is the Windows Store version in Windows 11, you need to uninstall it.
 import subprocess
 import uiautomation as auto
-auto.uiautomation.SetGlobalSearchTimeout(15)  # set new timeout 15
+auto.uiautomation.SetGlobalSearchTimeout(15)  # Set the global search timeout to 15
 
 
 def main():
-    subprocess.Popen('notepad.exe', shell=True)
+    subprocess.Popen('notepad.exe')
     window = auto.WindowControl(searchDepth=1, ClassName='Notepad')
-    # or use Compare for custom search
-    # window = auto.WindowControl(searchDepth=1, ClassName='Notepad', Compare=lambda control,depth:control.ProcessId==100)
     edit = window.EditControl()
-    # when calling SendKeys, uiautomation starts to search window and edit in 15 seconds
-    # because SendKeys indirectly calls Control.Element and Control.Element is None
-    # if window and edit don't exist in 15 seconds, a LookupError exception will be raised
+    # When SendKeys is called for the first time, uiautomation starts searching for the window and edit controls within 15 seconds
+    # because SendKeys indirectly calls Control.Element, and Control.Element is None.
+    # If the window and edit controls are not found within 15 seconds, a LookupError exception is raised.
     try:
         edit.SendKeys('first notepad')
     except LookupError as ex:
         print("The first notepad doesn't exist in 15 seconds")
         return
-    # the second call to SendKeys doesn't trigger a search, the previous call makes sure that Control.Element is valid
+    # The second SendKeys call does not trigger a search because the previous call ensured that Control.Element is valid.
     edit.SendKeys('{Ctrl}a{Del}')
-    window.GetWindowPattern().Close()  # close the first Notepad, window and edit become invalid even though their Elements have a value
+    window.GetWindowPattern().Close()  # Close the first Notepad, even though window and edit have a value, they are invalid.
 
-    subprocess.Popen('notepad.exe')  # run second Notepad
-    window.Refind()  # need to refind window, trigger a new search
-    edit.Refind()  # need to refind edit, trigger a new search
+    subprocess.Popen('notepad.exe')  # Run the second Notepad
+    window.Refind()  # Must perform a new search
+    edit.Refind()  # Must perform a new search
     edit.SendKeys('second notepad')
     edit.SendKeys('{Ctrl}a{Del}')
-    window.GetWindowPattern().Close()  # close the second Notepad, window and edit become invalid again
+    window.GetWindowPattern().Close()  # Close the second Notepad, even though window and edit have a value, they are invalid again.
 
-    subprocess.Popen('notepad.exe')  # run third Notepad
-    if window.Exists(3, 1): # trigger a new search
-        if edit.Exists(3):  # trigger a new search
-            edit.SendKeys('third notepad')  # edit.Exists makes sure that edit.Element has a valid value now
+    subprocess.Popen('notepad.exe')  # Run the third Notepad
+    if window.Exists(3, 1): # Trigger a new search
+        if edit.Exists(3):  # Trigger a new search
+            edit.SendKeys('third notepad')  # The previous Exists call ensures that edit.Element is valid
             edit.SendKeys('{Ctrl}a{Del}')
         window.GetWindowPattern().Close()
     else:
@@ -250,48 +243,41 @@ def main():
 if __name__ == '__main__':
     main()
 ```
----
 
-**If automation.py can't print the controls you see.
-Maybe the controls were built by DirectUI(or CustomControl), not UI Frameworks supplied by Microsoft.
-In order to support UIAutomation, an UI Framework must implement [UI Automation Provider](https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-providersoverview).**
+You can also set `auto.uiautomation.DEBUG_SEARCH_TIME = True` to see the number of controls traversed and the search time when searching for controls.
 
-A Microsoft UI Automation provider is a software object that exposes an element of an application's UI so that accessibility client applications can retrieve information about the element and invoke its functionality. In general, each control or other distinct element in a UI has a provider.
+Reference: demos/automation_calculator.py
 
-Microsoft includes a provider for each of the standard controls that are supplied with Microsoft Win32, Windows Forms, and Windows Presentation Foundation (WPF). This means that the standard controls are automatically exposed to UI Automation clients; you do not need to implement any accessibility interfaces for the standard controls.
+## Demo
 
-If your application includes any custom controls, you need to implement UI Automation providers for those controls to make them accessible to accessibility client applications. You also need to implement providers for any third party controls that do not include a provider. You implement a provider by implementing UI Automation provider interfaces and control pattern interfaces.
+The **demos** directory provides some examples for learning how to use uiautomation.
 
----
+## Q&A
 
-Another UI tool [Inspect.exe](https://docs.microsoft.com/en-us/windows/win32/winauto/inspect-objects) supplied by Microsoft can also be used to traverse the UI elements. It has an UI interface while my script shows UI elements in terminal.
-But I found that my script is more convenient sometimes.
+### Cannot Find Controls
 
-![Inspect](https://docs.microsoft.com/en-us/windows/desktop/WinAuto/images/inspect.png)
+If you find that `automation.py` cannot print the controls of the program you are looking at, it is not a bug in uiautomation. This is because the program is implemented using DirectUI or custom controls, rather than the standard controls provided by Microsoft. This software must implement [UI Automation Provider](https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-providersoverview) in order to support UIAutomation. The standard controls provided by Microsoft typically support UIAutomation by default.
 
----
+For example, in the Chrome browser, by default, you can only see the top-level `PaneControl` `Chrome_WidgetWin_1`, and you cannot see the specific child controls of Chrome. However, if you run the Chrome browser with the `--force-renderer-accessibility` parameter, you will be able to see the child controls of Chrome. This is because Chrome has implemented the UI Automation Provider and added a parameter switch. If a software is implemented using DirectUI but does not implement the UI Automation Provider, then it does not support UIAutomation.
 
-Some screenshots:
+## Some Screenshots
 
-Batch rename pdf bookmark
-![bookmark](images/rename_pdf_bookmark.gif)
+Batch rename PDF bookmarks
+![bookmark](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\rename_pdf_bookmark.gif)
 
-
-Microsoft Word        
-![Word](images/word.png)
-
+Get text from Microsoft Word
+![Word](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\word.png)
 
 Wireshark 3.0 (Qt 5.12)
-![Wireshark](images/wireshark3.0.gif)
-
+![Wireshark](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\wireshark3.0.gif)
 
 GitHub Desktop (Electron App)
-![GitHubDesktop](images/github_desktop.png)
+![GitHubDesktop](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\github_desktop.png)
 
+Display QQ
+![QQ](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\automation_qq.png)
 
-Pretty print dir        
-![PrettyPrint](images/pretty_print_dir.png)
+Print a nicely formatted directory structure
+![PrettyPrint](C:\Users\yvzzi\Desktop\Python-UIAutomation-for-Windows\assets\readme.assets\pretty_print_dir.png)
 
-
-Donate：                                
-![微信](images/yks-wx.png) ![支付宝](images/yks-zfb.png)
+.
